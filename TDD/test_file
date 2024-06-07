@@ -1,0 +1,43 @@
+import sys
+sys.path.insert(0, '../src')
+from jsonn import data_sheet
+import unittest
+import json
+from jproperties import Properties
+
+class TestExcelToJson(unittest.TestCase):
+    def test1(self):
+        config = Properties()
+        with open(r'..\test.properties', 'rb') as config_file:
+            config.load(config_file)
+
+        excel_file = config.get('excel_file').data
+        print(excel_file)
+        
+        output_file = 'output.json'
+
+        with open(config.get('dummy_json').data, 'r') as file:
+            dummy = json.load(file)
+
+        search_criteria = {
+            "movie_title": "AvatarÂ ",
+            "director_name": "James Cameron",
+            "actor_1_name": "CCH Pounder",
+            "gross": "760505847",  
+            "genres": "Action|Adventure|Fantasy|Sci-Fi",
+            "year": "2009"  
+        }
+        
+        obj1 = data_sheet(excel_file, output_file)
+        result=obj1.excel_to_json(search_criteria)
+
+        # with open(output_file, 'r') as file:
+        # result = json.load(file)
+
+        self.assertTrue(result, dummy)
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+

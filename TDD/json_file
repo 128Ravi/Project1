@@ -1,0 +1,41 @@
+import openpyxl 
+import json
+from jproperties import Properties
+from filter import filter_data 
+
+
+class data_sheet:
+    def __init__(self,excel_file,output_file):
+        self.excel_file=excel_file
+        self.output_file=output_file
+              
+    def excel_to_json(self, search_criteria):
+        workbook = openpyxl.load_workbook(self.excel_file)
+        sheet = workbook.active
+        rows = list(sheet.iter_rows(values_only=True))
+        
+        filtered_data = filter_data(rows, search_criteria)
+
+          
+        with open(self.output_file, 'w') as file:
+            json.dump(filtered_data, file, indent=4)
+        return self.output_file
+
+config=Properties()
+with open(r'..\test.properties','rb') as config_file:
+    config.load(config_file)
+
+excel_file=config.get('excel_file').data
+print(excel_file)
+output_file='output.json'
+
+search_criteria = {}
+search_fields = ['movie_title', 'director_name', 'actor_1_name', 'gross', 'genres', 'year']
+for field in search_fields:
+    value = input(f"Enter {field.replace('_', ' ')}: ")
+    
+    if value:
+        search_criteria[field] = value
+
+object1=data_sheet(excel_file,output_file)
+object1.excel_to_json(search_criteria)
